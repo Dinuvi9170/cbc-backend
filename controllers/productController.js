@@ -1,0 +1,57 @@
+import Product from "../models/product.js";
+import { isAdmin } from "./userController.js";
+
+export const createProduct = (req, res) => {
+  if(!isAdmin(req)){
+    res.status(403).json({message:"You are not authorized to add products."});
+    return;
+  }
+
+  const product = new Product(req.body);
+  product
+    .save()
+    .then(() => {
+      res.status(201).json({ message: "Product created successfully" });
+    })
+    .catch((error) => {
+      res.status(401).json({ message: "Failed to create product " });
+      console.log(error);
+    });
+};
+
+export const getProduct =async (req,res)=>{
+    try{
+        if(isAdmin(req)){
+            const products= await Product.find();
+            return res.status(200).json(products)
+        }else{
+            const products= await Product.find({isAvailable:true});
+            return res.status(200).json(products)
+        }
+    }catch(error){
+        res.status(401).json({ message: "Failed to load products " });
+        console.log(error);
+    }
+};
+
+export const deleteProduct = async(req,res)=>{
+  if(!isAdmin(req)){
+    res.status(403).json({message:"You are not authorized to delete product"});
+    return;
+  }
+  try{
+    const {productId}= req.params;
+    if(!productId){
+      res.status(400).json({message:'productId is required'});
+      return;
+    }
+    const product = await Product.findOneAndDelete({productId:req.params.productId});
+    if(!product){
+      res.status(404).json({message:'Not found product'});
+    }
+    res.status(200).json({message:"Product deleted successfully."});
+  }catch(error){
+    res.status(500).json({message:"Failed to delete product"});
+    console.log(error);
+  }
+};

@@ -73,5 +73,4 @@ export const createOrder= async (req,res)=>{
     }catch(error){
         res.status(500).json({message:"Failed to create order",error:error})
     }
-
 };

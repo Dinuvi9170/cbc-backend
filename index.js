@@ -6,9 +6,10 @@ import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import OrderRouter from './routes/orderRoute.js';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use((req,res,next)=>{
@@ -34,12 +35,12 @@ app.use((req,res,next)=>{
     }
 })
 
-app.use('/users',userRouter);
-app.use('/products',productRouter);
-app.use('/orders',OrderRouter);
+app.use('/api/users',userRouter);
+app.use('/api/products',productRouter);
+app.use('/api/orders',OrderRouter);
 
 connectDB(); 
 
-app.listen(3000,()=>{
-    console.log("Server is running on port 3000");
+app.listen(5000,()=>{
+    console.log("Server is running on port 5000");
 });

@@ -19,7 +19,7 @@ app.use((req,res,next)=>{
         const token= tokenString.replace('Bearer ',"")
         console.log(token)
 
-        jwt.verify(token,"capital@123",
+        jwt.verify(token,process.env.JWT_SECRET,
             (err,decoded)=>{
                 if(decoded!==null){
                     console.log(decoded)

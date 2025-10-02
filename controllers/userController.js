@@ -3,13 +3,15 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const createUser = (req, res) => {
-    if(req.user==null){
-        res.status(403).json({message:"Please login first"})
-        return;
-    }else{
-        if(req.user.role!=="Admin"){
-            res.status(403).json({message:"You are not authorized to create admin accounts."});
+    if(req.role=="Admin"){
+        if(req.user==null){
+            res.status(403).json({message:"Please login first"})
             return;
+        }else{
+            if(req.user.role!=="Admin"){
+                res.status(403).json({message:"You are not authorized to create admin accounts."});
+                return;
+            }
         }
     }
 
@@ -53,7 +55,7 @@ export const loginUser= (req,res)=>{
                         role:user.role,
                         profileimage:user.profileimage
                     },process.env.JWT_SECRET)
-                    res.status(200).json({message:"Login successful",token:token})
+                    res.status(200).json({message:"Login successful",token:token,role:user.role})
                 }
                 else{
                     res.status(401).json({message:"Invalid password"})

@@ -74,3 +74,21 @@ export const createOrder= async (req,res)=>{
         res.status(500).json({message:"Failed to create order",error:error})
     }
 };
+
+export const GetOrder= async(req,res)=>{
+    if(req.user===null){
+        res.status(401).json({message:"Please login first and try again"})
+        return 
+    }
+    try{
+        if(req.user.role=="Admin"){
+            const orders= await Order.find()
+            res.status(200).json(orders)
+        }else{
+            const orders=await Order.find({email:req.user.email})
+            res.status(200).json(orders)
+        }
+    }catch{
+        res.status(500).json({message:"Failed to create order",error:error})
+    }
+}

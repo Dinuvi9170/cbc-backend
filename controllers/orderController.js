@@ -88,7 +88,27 @@ export const GetOrder= async(req,res)=>{
             const orders=await Order.find({email:req.user.email})
             res.status(200).json(orders)
         }
-    }catch{
-        res.status(500).json({message:"Failed to create order",error:error})
+    }catch(error){
+        res.status(500).json({message:"Failed to get order",error:error})
+    }
+}
+
+export const GetOrderbyId = async(req,res)=>{
+    const orderId=req.params.orderId;
+    
+    if(!req.user){
+        res.status(401).json({message:"Please login first and try again"})
+        return;
+    }
+    try{
+        const order= await Order.findOne({orderId:orderId});
+        if(!order){
+            res.status(404).json({message:"Order not found"})
+            return;
+        }
+        res.status(200).json(order)
+        
+    }catch(error){
+        res.status(500).json({message:"Failed to get order",error:error})
     }
 }

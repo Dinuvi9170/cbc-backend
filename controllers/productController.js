@@ -95,9 +95,8 @@ export const updateProduct = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   const productId = req.params.productId;
-  const product = await Product.findOne({ productId: productId });
-
   try {
+    const product = await Product.findOne({ productId: productId });
     if (product == null) {
       res.status(404).json({ message: "Product not found" });
       return;

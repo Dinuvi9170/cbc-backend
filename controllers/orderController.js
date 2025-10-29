@@ -112,3 +112,30 @@ export const GetOrderbyId = async(req,res)=>{
         res.status(500).json({message:"Failed to get order",error:error})
     }
 }
+
+export const updateStatus =async (req,res)=>{
+    if(req.user==null || req.user.role!="Admin"){
+        res.status(403).json({message:"You are not authorized to change the order status."})
+        return
+    }
+    try{
+        const orderId=req.params.orderId;
+        const {status}=req.body;
+        const order= await Order.findOneAndUpdate(
+            {orderId},
+            {status},
+            { new: true }
+        )
+        if(!order){
+            res.status(404).json({message:"Order not found"})
+            return;
+        }
+        res.status(200).json({message:"Status updated successfully",order})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"Failed to update order status",error:error})
+    }
+    
+    
+
+}

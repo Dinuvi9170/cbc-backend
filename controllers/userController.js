@@ -58,7 +58,17 @@ export const loginUser= (req,res)=>{
                         role:user.role,
                         profileimage:user.profileimage
                     },process.env.JWT_SECRET)
-                    res.status(200).json({message:"Login successful",token:token,role:user.role})
+                    res.status(200).json({message:"Login successful",
+                        token:token,
+                        role:user.role,
+                        user: {
+                            _id: user._id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.email,
+                            profileimage: user.profileimage
+                        },
+                    })
                 }
                 else{
                     res.status(401).json({message:"Invalid password"})
@@ -99,7 +109,17 @@ export const loginWithGoogle = async (req,res)=>{
             role:user.role,
             profileimage:user.profileimage
         },process.env.JWT_SECRET)
-        res.status(200).json({message:"Google login successful",token:token,role:user.role})
+        res.status(200).json({message:"Google login successful",
+            token:token,
+            role:user.role,
+            user:{
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    profileimage: user.profileimage
+                },
+        })
     }else{
         const token= jwt.sign({
                 firstName: user.firstName,

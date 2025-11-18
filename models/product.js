@@ -43,6 +43,24 @@ const ProductSchema= mongoose.Schema(
             type:Boolean,
             required:true,
             default:true
+        },
+        category: {
+            type:String,
+            enum: [
+                "Makeup",
+                "Skincare",
+                "Fragrance",
+                "Accessories",
+                "HairCare",
+                "BodyCare",
+                "Other"
+            ],
+            required: false
+        },
+        skinType: {
+            type: [String],
+            enum: ["Dry", "Oily", "Normal", "Sensitive", "All"],
+            required: false
         }
     }
 )

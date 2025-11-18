@@ -113,12 +113,12 @@ export const loginWithGoogle = async (req,res)=>{
             token:token,
             role:user.role,
             user:{
-                    _id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    profileimage: user.profileimage
-                },
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                profileimage: user.profileimage
+            },
         })
     }else{
         const token= jwt.sign({
@@ -128,7 +128,17 @@ export const loginWithGoogle = async (req,res)=>{
                 role:user.role,
                 profileimage:user.profileimage
             },process.env.JWT_SECRET)
-            res.status(200).json({message:"Login successful",token:token,role:user.role})
+            res.status(200).json({message:"Login successful",
+                token:token,
+                role:user.role,
+                user:{
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    profileimage: user.profileimage
+                }
+            })
 
     }}catch(error){
         res.status(500).json({ message: "Failed google login" });

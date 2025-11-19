@@ -50,9 +50,8 @@ const ProductSchema= mongoose.Schema(
                 "Makeup",
                 "Skincare",
                 "Fragrance",
-                "Accessories",
-                "HairCare",
-                "BodyCare",
+                "Haircare",
+                "Bodycare",
                 "Other"
             ],
             required: false

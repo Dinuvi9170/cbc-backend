@@ -138,3 +138,26 @@ export const getProductByCategory = async (req, res) => {
     console.log(error);
   }
 };
+
+export const getProductBySkin = async (req, res) => {
+  const skinType = req.params.skinType;
+  try {
+    const products = await Product.find({ skinType: skinType });
+    if (products.length === 0) {
+      res.status(404).json({ message: `Not found products suitable for ${skinType}` });
+      return;
+    }
+
+    const availableproducts= products.filter((product)=>product.isAvailable);
+    
+    if (availableproducts.length===0){ 
+      res.status(404).json({ message: `No available products for ${skinType} skin` });
+      return;
+    }
+    res.status(200).json(availableproducts);
+    
+  } catch (error) {
+    res.status(500).json({ message: `Failed to get products for ${skinType} skin ` });
+    console.log(error);
+  }
+};

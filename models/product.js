@@ -58,7 +58,7 @@ const ProductSchema= mongoose.Schema(
         },
         skinType: {
             type: [String],
-            enum: ["Dry", "Oily", "Normal", "Sensitive", "All"],
+            enum: ["Dry", "Oily", "Normal", "Sensitive"],
             required: false
         }
     }

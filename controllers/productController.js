@@ -161,3 +161,22 @@ export const getProductBySkin = async (req, res) => {
     console.log(error);
   }
 };
+
+export const searchProduct= async (req, res) => {
+  const query  = req.params.query;
+  try {
+    const products = await Product.find({
+      isAvailable: true,
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+        { skinType: { $regex: query, $options: "i" } },
+      ],
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to search products" });
+    console.log(error);
+  }
+};

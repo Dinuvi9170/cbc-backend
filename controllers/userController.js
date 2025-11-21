@@ -52,9 +52,12 @@ export const loginUser= (req,res)=>{
                 if(isPasswordCorrect)
                 {
                     const token= jwt.sign({
+                        _id: user._id.toString(),
                         firstName: user.firstName,
                         lastName: user.lastName,
                         email: user.email,
+                        phone: user.phone,
+                        address: user.address,
                         role:user.role,
                         profileimage:user.profileimage
                     },process.env.JWT_SECRET)
@@ -103,6 +106,7 @@ export const loginWithGoogle = async (req,res)=>{
             profileimage: response.data.picture,
         })
         const token=jwt.sign({
+            _id: user._id.toString(),
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -122,6 +126,7 @@ export const loginWithGoogle = async (req,res)=>{
         })
     }else{
         const token= jwt.sign({
+                _id: user._id.toString(),
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
@@ -237,3 +242,74 @@ export const isAdmin =(req)=>{
     }
     return true;
 };
+
+export const getAllusers= async(req,res)=>{
+    if(!req.user){
+        res.status(401).json({message:"Please login first and try again"})
+        return;
+    }
+    try{
+        if(req.user.role=="Admin"){
+            const users= await User.find();
+            res.status(200).json(users)
+        }
+        res.status(403).json({message:"You are not authorized to view all users"})  
+    }catch(error){
+        res.status(500).json({message:"Failed to load users"})
+        console.log(error);
+    }
+}
+
+export const getUserbyId= async(req,res)=>{
+    if(!req.user){
+        res.status(401).json({message:"Please login first and try again"})
+        return;
+    }
+    try{
+        const userId = req.params.userId;
+
+        const loggedUser = await User.findOne({ email: req.user.email });
+
+        if (!loggedUser) {
+        return res.status(404).json({ message: "Logged-in user not found" });
+        }
+
+        if(loggedUser.role!=="Admin" && loggedUser._id.toString() !==userId){
+            return res.status(403).json({message:"You are not authorized to view this user"})
+        }
+        const user= await User.findById(userId);
+        if(!user){
+            res.status(404).json({message:"User not found"})
+            return;
+        }
+        return res.status(200).json(user)
+    }catch(error){
+        res.status(500).json({message:"Failed to load user"})
+        console.log(error);
+    }
+}
+
+export const updateProfile= async(req,res)=>{
+    if(!req.user){
+        res.status(401).json({message:"Please login first and try again"})
+        return;
+    }
+    const email=req.params.email;
+    const updateData=req.body;
+    try{
+        if(!email){
+            res.status(400).json({message:"Email is required"})
+            return;
+        }
+        if(req.user.email!==email){
+            return res.status(403).json({message:"You are not authorized to update this profile"})
+        }
+        const updatedUser= await User.findOneAndUpdate({email:email},updateData
+        ,{new:true});
+        res.status(200).json({message:"Profile updated successfully",user:updatedUser})
+    }catch(error){
+        res.status(500).json({message:"Failed to update profile"})
+        console.log(error);
+    }
+}
+

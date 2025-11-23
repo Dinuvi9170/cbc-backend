@@ -39,8 +39,12 @@ const UserSchema = mongoose.Schema({
     profileimage:{
         type:String,
         required:false,
-        default:"https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+        default:"https://mxlpkdrudnaffxfgykil.supabase.co/storage/v1/object/public/images/icon.png"
     },
+    date:{
+        type:Date,
+        default:Date.now
+    }
     
 })
 

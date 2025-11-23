@@ -249,11 +249,12 @@ export const getAllusers= async(req,res)=>{
         return;
     }
     try{
-        if(req.user.role=="Admin"){
-            const users= await User.find();
-            res.status(200).json(users)
+        if(req.user.role!=="Admin"){
+            res.status(403).json({message:"You are not authorized to view all users"})
+            return;  
         }
-        res.status(403).json({message:"You are not authorized to view all users"})  
+        const users= await User.find().sort({ date: -1 });
+        res.status(200).json(users)
     }catch(error){
         res.status(500).json({message:"Failed to load users"})
         console.log(error);
@@ -268,13 +269,7 @@ export const getUserbyId= async(req,res)=>{
     try{
         const userId = req.params.userId;
 
-        const loggedUser = await User.findOne({ email: req.user.email });
-
-        if (!loggedUser) {
-        return res.status(404).json({ message: "Logged-in user not found" });
-        }
-
-        if(loggedUser.role!=="Admin" && loggedUser._id.toString() !==userId){
+        if(req.user._id.toString() !==userId){
             return res.status(403).json({message:"You are not authorized to view this user"})
         }
         const user= await User.findById(userId);
@@ -294,22 +289,53 @@ export const updateProfile= async(req,res)=>{
         res.status(401).json({message:"Please login first and try again"})
         return;
     }
-    const email=req.params.email;
+    const userId=req.params.userId;
     const updateData=req.body;
     try{
-        if(!email){
-            res.status(400).json({message:"Email is required"})
+        if(!userId){
+            res.status(400).json({message:"userId is required"})
             return;
         }
-        if(req.user.email!==email){
+        if(req.user._id!==userId){
             return res.status(403).json({message:"You are not authorized to update this profile"})
         }
-        const updatedUser= await User.findOneAndUpdate({email:email},updateData
+        const updatedUser= await User.findByIdAndUpdate(userId,updateData
         ,{new:true});
         res.status(200).json({message:"Profile updated successfully",user:updatedUser})
     }catch(error){
         res.status(500).json({message:"Failed to update profile"})
         console.log(error);
+    }
+}
+
+export const ManageAccount =async (req,res)=>{
+    if(!req.user || req.user.role!="Admin"){
+        res.status(403).json({message:"You are not authorized to change the account status."})
+        return
+    }
+    try{
+        const userId=req.params.userId;
+        const {isBlocked}=req.body;
+        
+        if (typeof isBlocked === "undefined") {
+            return res.status(400).json({ message: "isBlocked value is required."});
+        }
+
+        const blockedValue = isBlocked === "true" || isBlocked === true || isBlocked === 1 || isBlocked === "2";
+
+        const user= await User.findByIdAndUpdate(
+            userId,
+            {isBlocked: blockedValue},
+            { new: true }
+        )
+        if(!user){
+            res.status(404).json({message:"User not found"})
+            return;
+        }
+        res.status(200).json({message:"Status changed successfully",user})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"Failed to change status of accounts",error:error})
     }
 }
 

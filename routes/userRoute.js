@@ -4,6 +4,7 @@ import { createUser,
     getUserbyId,
     loginUser, 
     loginWithGoogle, 
+    ManageAccount, 
     ResetPassword, 
     sendOTP, 
     updateProfile } from "../controllers/userController.js";
@@ -15,7 +16,7 @@ userRouter.post('/login',loginUser);
 userRouter.post('/login/google',loginWithGoogle);
 userRouter.post('/sendOTP',sendOTP);
 userRouter.post('/reset_password',ResetPassword);
-userRouter.route('/:userId').get(getUserbyId);
-userRouter.put('/:email',updateProfile);
+userRouter.route('/:userId').get(getUserbyId).put(updateProfile);
+userRouter.route('/manage/:userId').put(ManageAccount);
 
 export default userRouter;

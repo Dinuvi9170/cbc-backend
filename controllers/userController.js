@@ -44,9 +44,12 @@ export const loginUser= (req,res)=>{
 
     User.findOne({email:email}).then(
         (user)=>{
-            if(user==null)
-                res.status(404).json({message:"User not found"})
-            else
+            if(user==null){
+                return res.status(404).json({message:"User not found"})
+            }
+            if (user.isBlocked) {
+                return res.status(403).json({ message: "Your account is blocked by admin." });
+            }else
              {
                 const isPasswordCorrect= bcrypt.compareSync(password,user.password)
                 if(isPasswordCorrect)
@@ -92,10 +95,12 @@ export const loginWithGoogle = async (req,res)=>{
             "Authorization":"Bearer "+token
         }
     })
+    
     console.log(response.data)
     const user= await User.findOne({
         email:response.data.email
     })
+
     if(!user){
         const user = await User.create({
             firstName: response.data.given_name,
@@ -125,6 +130,9 @@ export const loginWithGoogle = async (req,res)=>{
             },
         })
     }else{
+        if (user.isBlocked) {
+            return res.status(403).json({ message: "Your account is blocked by admin." });
+        }
         const token= jwt.sign({
                 _id: user._id.toString(),
                 firstName: user.firstName,

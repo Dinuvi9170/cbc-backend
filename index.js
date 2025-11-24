@@ -7,6 +7,7 @@ import productRouter from './routes/productRoute.js';
 import OrderRouter from './routes/orderRoute.js';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
+import Reviewrouter from './routes/reviewRoute.js';
 
 const app = express();
 app.use(cors());
@@ -38,6 +39,7 @@ app.use((req,res,next)=>{
 app.use('/api/users',userRouter);
 app.use('/api/products',productRouter);
 app.use('/api/orders',OrderRouter);
+app.use('/api/reviews',Reviewrouter);
 
 connectDB(); 
 

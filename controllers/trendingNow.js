@@ -5,23 +5,18 @@ export const incrementViews = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    const product = await Product.findById(productId); 
+    const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
-    let trending = await Trending.findOne({ product: product._id });
-    if (!productId ) {
-        return res.status(400).json({ message: "Invalid or missing productId" });
-    }
 
-
-    if (!trending) {
-      trending = new Trending({ product: product._id, views: 1 });
-    } else {
-      trending.views += 1;
-    }
-
+    const trending = await Trending.findOneAndUpdate(
+      { product: product._id },
+      { $inc: { views: 1 } }, 
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+    
     trending.trendingScore = trending.views * 0.5 + trending.addedToCartCount * 1.5;
-
     await trending.save();
+
     res.json(trending);
   } catch (error) {
     console.error(error);
@@ -33,23 +28,25 @@ export const incrementAddToCart = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    let trending = await Trending.findOne({ product: productId });
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
-    if (!trending) {
-      trending = new Trending({ product: productId, addedToCartCount: 1 });
-    } else {
-      trending.addedToCartCount += 1;
-    }
+    const trending = await Trending.findOneAndUpdate(
+      { product: product._id },
+      { $inc: { addedToCartCount: 1 } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
 
     trending.trendingScore = trending.views * 0.5 + trending.addedToCartCount * 1.5;
-
     await trending.save();
+
     res.json(trending);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error incrementing add-to-cart" });
   }
 };
+
 
 export const getTrendingProducts = async (req, res) => {
   try {

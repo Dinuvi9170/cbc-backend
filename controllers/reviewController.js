@@ -2,6 +2,10 @@ import Review from "../models/review.js";
 import User from "../models/user.js";
 
 export const createReview = async (req, res) => {
+    if(req.user===null){
+        res.status(403).json({message:'Please login and try again'});
+        return;
+    }
     try {
         const userId = req.user._id; 
         const { productId, rating, comment } = req.body;
@@ -28,6 +32,10 @@ export const createReview = async (req, res) => {
 };
 
 export const getAllReviews = async (req, res) => {
+    if(req.user===null){
+        res.status(403).json({message:'Please login and try again'});
+        return;
+    }
     try {
         const userId = req.user?._id;
         if (!userId) {
@@ -39,11 +47,12 @@ export const getAllReviews = async (req, res) => {
         if(currentUser.role === "Admin"){
             const reviews = await Review.find()
                 .populate("userId", "firstName lastName email") 
-                .populate("productId", "name images description price");
+                .populate("productId", "name images description normalPrice labeledPrice");
 
             res.status(200).json({message: "Reviews fetched successfully",reviews});
         }else{
-            const reviews = await Review.findById(userId);
+            const reviews = await Review.find({userId:userId})
+                .populate("productId", "name images description normalPrice labeledPrice");
             res.status(200).json({message: "Reviews fetched successfully",reviews}); 
         }
     } catch (error) {
@@ -69,6 +78,10 @@ export const getReviewsByProduct = async (req, res) => {
 };
 
 export const deleteReview = async (req, res) => {
+    if(req.user===null){
+        res.status(403).json({message:'Please login and try again'});
+        return;
+    }
     try {
         const reviewId = req.params.reviewId;
         const userId = req.user._id;

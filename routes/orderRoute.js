@@ -1,10 +1,11 @@
+import { requireAdmin, requireAuth } from "../controllers/middlewares/Authmiddleware.js";
 import { createOrder, GetOrder, GetOrderbyId, updateStatus} from "../controllers/orderController.js";
 import express from 'express';
 
 const OrderRouter= express.Router();
 
-OrderRouter.route('/').post(createOrder).get(GetOrder);
-OrderRouter.route('/:orderId').get(GetOrderbyId);
-OrderRouter.route('/:orderId').put(updateStatus);
+OrderRouter.route('/').post(requireAuth,createOrder).get(requireAuth, requireAdmin,GetOrder);
+OrderRouter.route('/:orderId').get(requireAuth,GetOrderbyId);
+OrderRouter.route('/:orderId').put(requireAuth, requireAdmin,updateStatus);
 
 export default OrderRouter;

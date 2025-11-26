@@ -45,13 +45,13 @@ export const getAllReviews = async (req, res) => {
         const currentUser = await User.findById(userId);
 
         if(currentUser.role === "Admin"){
-            const reviews = await Review.find()
+            const reviews = await Review.find().sort({ date: -1 })
                 .populate("userId", "firstName lastName email") 
                 .populate("productId", "name images description normalPrice labeledPrice");
 
             res.status(200).json({message: "Reviews fetched successfully",reviews});
         }else{
-            const reviews = await Review.find({userId:userId})
+            const reviews = await Review.find({userId:userId}).sort({ date: -1 })
                 .populate("productId", "name images description normalPrice labeledPrice");
             res.status(200).json({message: "Reviews fetched successfully",reviews}); 
         }

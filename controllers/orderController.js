@@ -82,10 +82,10 @@ export const GetOrder= async(req,res)=>{
     }
     try{
         if(req.user.role=="Admin"){
-            const orders= await Order.find()
+            const orders= await Order.find().sort({ date: -1 })
             res.status(200).json(orders)
         }else{
-            const orders=await Order.find({email:req.user.email})
+            const orders=await Order.find({email:req.user.email}).sort({ date: -1 })
             res.status(200).json(orders)
         }
     }catch(error){

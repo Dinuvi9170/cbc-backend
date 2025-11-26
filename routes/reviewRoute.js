@@ -5,7 +5,7 @@ import { requireAdmin, requireAuth } from "../controllers/middlewares/Authmiddle
 const Reviewrouter = express.Router();
 
 Reviewrouter.post("/", requireAuth, createReview);
-Reviewrouter.get('/',requireAuth, requireAdmin,getAllReviews);
+Reviewrouter.get('/',requireAuth,getAllReviews);
 Reviewrouter.get("/:productId", getReviewsByProduct);
 Reviewrouter.delete("/:reviewId",requireAuth, requireAdmin, deleteReview);
 

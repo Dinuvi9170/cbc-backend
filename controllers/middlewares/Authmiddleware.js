@@ -18,8 +18,19 @@ export const requireAuth = (req, res, next) => {
 };
 
 export const requireAdmin = (req, res, next) => {
-    if (!req.user || req.user.role !== "admin") {
-        return res.status(403).json({ message: "Access denied: Admin only" });
+ 
+  const tokenString = req.header("Authorization");
+    if (!tokenString) {
+        return res.status(401).json({ message: "No token provided" });
     }
+
+    const token = tokenString.replace("Bearer ", "");
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded || decoded.role !== "Admin") {
+      return res.status(403).json({ message: "Access denied: Admin only" });
+    }
+    req.user = decoded;
     next();
 };

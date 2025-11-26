@@ -4,7 +4,7 @@ import express from 'express';
 
 const OrderRouter= express.Router();
 
-OrderRouter.route('/').post(requireAuth,createOrder).get(requireAuth, requireAdmin,GetOrder);
+OrderRouter.route('/').post(requireAuth,createOrder).get(requireAuth,GetOrder);
 OrderRouter.route('/:orderId').get(requireAuth,GetOrderbyId);
 OrderRouter.route('/:orderId').put(requireAuth, requireAdmin,updateStatus);
 

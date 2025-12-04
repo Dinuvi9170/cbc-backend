@@ -23,11 +23,11 @@ export const createProduct = (req, res) => {
 
 export const getProduct = async (req, res) => {
   try {
-    if (isAdmin(req)) {
-      const products = await Product.find();
+    if (!isAdmin(req) || req.user==null) {
+      const products = await Product.find({ isAvailable: true });
       return res.status(200).json(products);
     } else {
-      const products = await Product.find({ isAvailable: true });
+      const products = await Product.find();
       return res.status(200).json(products);
     }
   } catch (error) {

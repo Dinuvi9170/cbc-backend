@@ -23,13 +23,13 @@ export const createProduct = (req, res) => {
 
 export const getProduct = async (req, res) => {
   try {
-    if (!isAdmin(req) || req.user==null) {
-      const products = await Product.find({ isAvailable: true });
-      return res.status(200).json(products);
+    let products;
+    if (isAdmin(req)) {
+      products = await Product.find();
     } else {
-      const products = await Product.find();
-      return res.status(200).json(products);
+      products = await Product.find({ isAvailable: true });
     }
+    res.status(200).json(products);
   } catch (error) {
     res.status(401).json({ message: "Failed to load products " });
     console.log(error);
